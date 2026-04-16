@@ -45,7 +45,7 @@ The dashboard is hosted on Azure App Service and updates automatically to reflec
 
 ## Installation
 
-git clone https://github.com/YOUR_USERNAME/rideau-canal-dashboard.git
+git clone https://github.com/vijayxavierwalter/rideau-canal-dashboard.git
 cd rideau-canal-dashboard
 npm install
 
@@ -56,7 +56,7 @@ npm install
 Create a .env file:
 
 COSMOS_ENDPOINT=your-cosmos-endpoint
-COSMOS_KEY=your-cosmos-key
+COSMOS_KEY=my-cosmos-key
 DATABASE_NAME=RideauCanalDB
 CONTAINER_NAME=SensorAggregations
 
