@@ -1,31 +1,67 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Rideau Canal Monitoring Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+let chart;
 
-  <link rel="stylesheet" href="styles.css">
+async function loadData() {
+  try {
+    const response = await fetch('/data');
+    const data = await response.json();
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
+    const cardsContainer = document.getElementById('cards');
+    cardsContainer.innerHTML = '';
 
-<body>
-  <div class="container">
-    <h1>Rideau Canal Monitoring Dashboard</h1>
-    <p class="subtitle">Live skating conditions by location</p>
+    // Latest per location
+    const latestData = {};
+    data.forEach(item => {
+      if (!latestData[item.location]) {
+        latestData[item.location] = item;
+      }
+    });
 
-    <!-- Cards -->
-    <div id="cards" class="cards"></div>
+    Object.values(latestData).forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'card';
 
-    <!-- Chart Section -->
-    <div class="chart-section">
-      <h2>Ice Thickness Trend</h2>
-      <canvas id="iceChart"></canvas>
-    </div>
-  </div>
+      card.innerHTML = `
+        <h2>${item.location}</h2>
+        <p><strong>Average Ice Thickness:</strong> ${item.avgIceThickness.toFixed(2)}</p>
+        <p><strong>Average Water Temperature:</strong> ${item.avgWaterTemperature.toFixed(2)}</p>
+        <p><strong>Skating Condition:</strong> ${item.skatingCondition}</p>
+        <p><strong>Timestamp:</strong> ${item.timestamp}</p>
+      `;
 
-  <script src="app.js"></script>
-</body>
-</html>
+      cardsContainer.appendChild(card);
+    });
+
+    // 🔥 Create chart data (use last 10 records)
+    const chartData = data.slice(0, 10).reverse();
+
+    const labels = chartData.map(d => new Date(d.timestamp).toLocaleTimeString());
+    const values = chartData.map(d => d.avgIceThickness);
+
+    const ctx = document.getElementById('iceChart').getContext('2d');
+
+    if (chart) {
+      chart.destroy();
+    }
+
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Ice Thickness',
+          data: values,
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true
+      }
+    });
+
+  } catch (error) {
+    console.error('Error loading dashboard data:', error);
+  }
+}
+
+loadData();
+setInterval(loadData, 10000);
