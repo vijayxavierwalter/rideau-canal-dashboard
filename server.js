@@ -8,6 +8,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
+// Cosmos DB connection
 const client = new CosmosClient({
   endpoint: process.env.COSMOS_ENDPOINT,
   key: process.env.COSMOS_KEY
@@ -16,6 +17,7 @@ const client = new CosmosClient({
 const database = client.database(process.env.DATABASE_NAME);
 const container = database.container(process.env.CONTAINER_NAME);
 
+// API route
 app.get('/data', async (req, res) => {
   try {
     const querySpec = {
@@ -30,7 +32,13 @@ app.get('/data', async (req, res) => {
   }
 });
 
+// ✅ IMPORTANT FIX FOR AZURE
 const PORT = process.env.PORT || 3000;
+
+// Optional health check (helps Azure)
+app.get('/', (req, res) => {
+  res.send('Rideau Canal Dashboard API is running');
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
