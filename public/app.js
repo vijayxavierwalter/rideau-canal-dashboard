@@ -1,39 +1,31 @@
-async function loadData() {
-  try {
-    const response = await fetch('/data');
-    const data = await response.json();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Rideau Canal Monitoring Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    const cardsContainer = document.getElementById('cards');
-    cardsContainer.innerHTML = '';
+  <link rel="stylesheet" href="styles.css">
 
-    // Keep only latest record per location
-    const latestData = {};
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
 
-    data.forEach(item => {
-      if (!latestData[item.location]) {
-        latestData[item.location] = item;
-      }
-    });
+<body>
+  <div class="container">
+    <h1>Rideau Canal Monitoring Dashboard</h1>
+    <p class="subtitle">Live skating conditions by location</p>
 
-    Object.values(latestData).forEach(item => {
-      const card = document.createElement('div');
-      card.className = 'card';
+    <!-- Cards -->
+    <div id="cards" class="cards"></div>
 
-      card.innerHTML = `
-        <h2>${item.location}</h2>
-        <p><strong>Average Ice Thickness:</strong> ${item.avgIceThickness.toFixed(2)}</p>
-        <p><strong>Average Water Temperature:</strong> ${item.avgWaterTemperature.toFixed(2)}</p>
-        <p><strong>Skating Condition:</strong> ${item.skatingCondition}</p>
-        <p><strong>Timestamp:</strong> ${item.timestamp}</p>
-      `;
+    <!-- Chart Section -->
+    <div class="chart-section">
+      <h2>Ice Thickness Trend</h2>
+      <canvas id="iceChart"></canvas>
+    </div>
+  </div>
 
-      cardsContainer.appendChild(card);
-    });
-
-  } catch (error) {
-    console.error('Error loading dashboard data:', error);
-  }
-}
-
-loadData();
-setInterval(loadData, 10000);
+  <script src="app.js"></script>
+</body>
+</html>
